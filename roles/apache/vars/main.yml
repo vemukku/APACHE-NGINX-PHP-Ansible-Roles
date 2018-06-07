@@ -1,0 +1,9 @@
+apache_install_dir: /etc/httpd
+apache_conf_dir: /etc/httpd/conf
+source_conf_dir: /Dev-Ansible/roles/apache/templates
+source_static_files: /Dev-Ansible/roles/apache/templates
+apache_static_files: /var/www/html
+apache_document_root_dir: /var/www/html
+php_remi_repo: http://rpms.remirepo.net/enterprise/remi-release-7.rpm 
+apache_user: apache
+apache_group: apache
