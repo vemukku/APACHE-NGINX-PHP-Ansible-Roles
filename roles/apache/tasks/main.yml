@@ -1,0 +1,45 @@
+       
+# INSTALL PHP
+- name: yum update
+  action: yum name=* state=latest
+  
+- name: yum install epel
+  yum: name=epel-release.noarch state=latest
+  
+- name: download remi repo rpm
+  get_url: url={{ php_remi_repo }} dest=/root/  
+  
+- name: install remi repo rpm
+  yum: name=/root/remi-release-7.rpm state=present
+  
+- name: install php
+  yum: enablerepo=remi,remi-php70        
+       name=php-mssql,php-opcache,php-pear,php,php-pdo,php-fpm,php-xml,php-pecl-zip,php-pecl-jsonc,php-pecl-igbinary,httpd,httpd-tools,php-mbstring state=latest
+  notify: 
+    - restart php-fpm
+
+# INSTALL AND CONFIGURE APACHE
+- name: Install Apache and PHP for CentOS7
+  yum: name=httpd update_cache=yes state=latest
+  notify:
+    - start apache
+  
+- name: Create Document Root Directory
+  file: path={{ apache_document_root_dir }} state=directory user={{ apache_user }} group={{ apache_group }}
+  tags:
+    - apache
+    - apache_configuration
+ 
+- name: Copying the static file
+  template: src=(( source_static_files ))/xyz.html.j2 dest=(( apache_static_files))
+            user={{ apache_user }} group={{ apache_group }} mode=0644
+            
+            
+- name: Copy and set httpd configuration
+  template: src=(( source_conf_dir ))/httpd.conf.j2 dest=(( apache_conf_dir ))/httpd.conf force=yes
+  tags:
+    - apache
+    - apache_configuration
+  notify: 
+    - restart apache
+ 
